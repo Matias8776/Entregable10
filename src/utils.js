@@ -6,6 +6,7 @@ import jwt from 'jsonwebtoken';
 import passport from 'passport';
 import config from './config/config.js';
 import nodemailer from 'nodemailer';
+import { faker } from '@faker-js/faker/locale/es_MX';
 
 const __fileName = fileURLToPath(import.meta.url);
 const __dirname = dirname(__fileName);
@@ -77,7 +78,13 @@ export const transport = nodemailer.createTransport({
   }
 });
 
-export const sendPurchaseEmail = async (to, withStock, withoutStock, total, code) => {
+export const sendPurchaseEmail = async (
+  to,
+  withStock,
+  withoutStock,
+  total,
+  code
+) => {
   await transport.sendMail({
     from: `Ecommerce <${config.email}>`,
     to: `${to}`,
@@ -107,6 +114,17 @@ export const sendPurchaseEmail = async (to, withStock, withoutStock, total, code
     </section>
     `
   });
+};
+
+export const generateProduct = () => {
+  return {
+    title: faker.commerce.product(),
+    description: faker.commerce.productDescription(),
+    price: faker.number.float({ min: 1, max: 200, precision: 0.01 }),
+    code: faker.string.uuid(),
+    stock: faker.number.int({ min: 1, max: 100 }),
+    category: faker.commerce.department()
+  };
 };
 
 export default __dirname;

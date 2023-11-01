@@ -30,26 +30,11 @@ h1 {
   max-width: 300px;
   min-height: 250px;
   margin: 35px;
-  overflow: hidden;
-  white-space: nowrap;
-  text-overflow: ellipsis;
   border: 1px solid #999999;
   padding: 25px;
   text-decoration: none;
   color: #999999;
   gap: 10px;
-}
-
-.purchaseButton {
-  color: black;
-  display: flex;
-  justify-content: center;
-  margin: 0 auto;
-  margin-top: 50px;
-  width: 130px;
-  border: 1px solid #999999;
-  background-color: #999999;
-  border-radius: 5%;
 }
 
 p {
@@ -77,7 +62,6 @@ a {
   border: 1px solid #999999;
   background-color: #999999;
   border-radius: 5%;
-  width: 70%
 }
 
 .clearButton, .purchaseButton {

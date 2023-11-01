@@ -20,7 +20,7 @@ socket.on('server:updatedProducts', async () => {
             <div><strong>Id:</strong> ${a._id}</div>
             <div><strong>Título:</strong> ${a.title}</div>
             <div><strong>Descripción:</strong> ${a.description}</div>
-            <div><strong>Precio:</strong> ${a.price}</div>
+            <div><strong>Precio:</strong> $${a.price}</div>
             <div><strong>Código:</strong> ${a.code}</div>
             <div><strong>Stock:</strong> ${a.stock}</div>
             <div><strong>Categoría:</strong> ${a.category}</div>

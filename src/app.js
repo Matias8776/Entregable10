@@ -3,7 +3,7 @@ import productsRouter from './routes/products.js';
 import cartsRouter from './routes/carts.js';
 import viewsRouter from './routes/views.js';
 import path from 'path';
-import __dirname from './utils.js';
+import __dirname, { generateProduct } from './utils.js';
 import handlebars from 'express-handlebars';
 import { Server } from 'socket.io';
 import MessagesManager from './dao/mongoDb/MessageManager.js';
@@ -14,6 +14,7 @@ import passport from 'passport';
 import initializePassport from './config/passport.js';
 import cookieParser from 'cookie-parser';
 import config from './config/config.js';
+import errorHandler from './middlewares/errors/index.js';
 
 const messagesManager = new MessagesManager();
 
@@ -45,7 +46,16 @@ app.use(passport.initialize());
 app.use('/api/carts', cartsRouter);
 app.use('/api/products', productsRouter);
 app.use('/api/sessions', sessionsRouter);
+app.get('/mockingproducts', async (req, res) => {
+  const products = [];
+  for (let i = 0; i < 100; i++) {
+    products.push(generateProduct());
+  }
+  res.send({ status: 'success', payload: products });
+});
 app.use('/', viewsRouter);
+
+app.use(errorHandler);
 
 const server = app.listen(PORT, () => {
   console.log(`Servidor ON http://localhost:${PORT}`);

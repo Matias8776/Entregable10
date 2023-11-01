@@ -27,7 +27,6 @@ li {
   display: flex;
   flex-direction: column;
   justify-content: center;
-  max-width: 300px;
   min-height: 250px;
   margin: 35px;
   overflow: hidden;

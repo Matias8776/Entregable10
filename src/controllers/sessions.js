@@ -3,6 +3,9 @@ import usersModel from '../dao/models/users.js';
 import { createHash, generateToken, passportCall } from '../utils.js';
 import config from '../config/config.js';
 import UserDTO from '../dao/DTOs/Users.js';
+import CustomError from '../services/errors/CustomError.js';
+import EErrors from '../services/errors/enums.js';
+import { generateUserErrorInfo } from '../services/errors/info.js';
 
 export const passportLogin = passport.authenticate('login', {
   failureRedirect: '/api/sessions/faillogin',
@@ -62,14 +65,14 @@ export const login = async (req, res) => {
 };
 
 export const failLogin = (req, res) => {
-  const message = req.session.messages;
   res.status(400).send({
-    status: 'error',
-    message
+    status: 'error'
   });
 };
 
 export const register = async (req, res) => {
+  
+
   res.send({
     status: 'success',
     message: 'Usuario registrado correctamente',
@@ -78,10 +81,8 @@ export const register = async (req, res) => {
 };
 
 export const failRegister = (req, res) => {
-  const message = req.session.messages;
   res.status(400).send({
-    status: 'error',
-    message
+    status: 'error'
   });
 };
 
