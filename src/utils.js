@@ -47,15 +47,15 @@ export const passportCall = (strategy) => {
       if (!user) {
         let errorMessage = info.message ? info.message : info.toString();
 
-        if (strategy === 'current' && errorMessage === 'jwt expired') {
+        if (errorMessage === 'jwt expired') {
           errorMessage = 'El token ha expirado';
         }
 
-        if (strategy === 'current' && errorMessage === 'No auth token') {
+        if (errorMessage === 'No auth token') {
           errorMessage = 'No se ha enviado el token';
         }
 
-        if (strategy === 'current' && errorMessage === 'invalid token') {
+        if (errorMessage === 'invalid token') {
           errorMessage = 'El token es inválido';
         }
 

@@ -1,21 +1,25 @@
 import cartsModel from '../models/carts.js';
+import mongoose from 'mongoose';
 
 export default class CartManager {
   getCarts = async () => {
     try {
       const carts = await cartsModel.find();
       return carts;
-    } catch (err) {
-      return { error: err.message };
+    } catch (error) {
+      return { error: error.message };
     }
   };
 
-  getCartById = async (cartId) => {
+  getCartById = async (cid) => {
+    if (!mongoose.Types.ObjectId.isValid(cid)) {
+      return;
+    }
     try {
-      const cart = await cartsModel.findById(cartId).lean();
+      const cart = await cartsModel.findById(cid).lean();
       return cart;
-    } catch (err) {
-      return { error: err.message };
+    } catch (error) {
+      return { error: error.message };
     }
   };
 
@@ -28,8 +32,8 @@ export default class CartManager {
 
       const cart = await cartsModel.create(cartData);
       return cart;
-    } catch (err) {
-      return { error: err.message };
+    } catch (error) {
+      return { error: error.message };
     }
   };
 
@@ -54,8 +58,8 @@ export default class CartManager {
       }
 
       return await cartsModel.findById(cid);
-    } catch (err) {
-      return { error: err.message };
+    } catch (error) {
+      return { error: error.message };
     }
   };
 
@@ -70,8 +74,8 @@ export default class CartManager {
       );
 
       return updatedCart;
-    } catch (err) {
-      return { error: err.message };
+    } catch (error) {
+      return { error: error.message };
     }
   };
 
@@ -81,8 +85,8 @@ export default class CartManager {
         { _id: id },
         { $set: { products: cart } }
       );
-    } catch (err) {
-      return { error: err.message };
+    } catch (error) {
+      return { error: error.message };
     }
   };
 
@@ -97,8 +101,8 @@ export default class CartManager {
       );
 
       return updatedCart;
-    } catch (err) {
-      return { error: err.message };
+    } catch (error) {
+      return { error: error.message };
     }
   };
 
@@ -108,8 +112,8 @@ export default class CartManager {
         { _id: cid, 'products._id': pid },
         { $set: { 'products.$.quantity': qty.quantity } }
       );
-    } catch (err) {
-      return { error: err.message };
+    } catch (error) {
+      return { error: error.message };
     }
   };
 }

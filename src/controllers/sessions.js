@@ -3,9 +3,7 @@ import usersModel from '../dao/models/users.js';
 import { createHash, generateToken, passportCall } from '../utils.js';
 import config from '../config/config.js';
 import UserDTO from '../dao/DTOs/Users.js';
-import CustomError from '../services/errors/CustomError.js';
-import EErrors from '../services/errors/enums.js';
-import { generateUserErrorInfo } from '../services/errors/info.js';
+import response from '../services/res/response.js';
 
 export const passportLogin = passport.authenticate('login', {
   failureRedirect: '/api/sessions/faillogin',
@@ -28,11 +26,6 @@ export const passportGithubCallback = passport.authenticate('github', {
 export const passportCurrent = passportCall('current');
 
 export const login = async (req, res) => {
-  if (!req.user) {
-    return res
-      .status(400)
-      .send({ status: 'error', message: 'Credenciales inválidas' });
-  }
   if (req.user.email === config.adminName) {
     req.session.user = {
       name: 'Administrador',
@@ -65,25 +58,15 @@ export const login = async (req, res) => {
 };
 
 export const failLogin = (req, res) => {
-  res.status(400).send({
-    status: 'error'
-  });
+  res.status(401).send({ status: 'error', message: 'Credenciales inválidas' });
 };
 
 export const register = async (req, res) => {
-  
-
-  res.send({
-    status: 'success',
-    message: 'Usuario registrado correctamente',
-    payload: req.user._id
-  });
+  response(res, 200, `Usuario registrado correctamente, ${req.user._id}`);
 };
 
 export const failRegister = (req, res) => {
-  res.status(400).send({
-    status: 'error'
-  });
+  res.status(401).send({ status: 'error', message: 'El usuario ya existe con ese email o faltan datos' });
 };
 
 export const logout = (req, res) => {
@@ -128,13 +111,10 @@ export const resetPassword = async (req, res) => {
   }
   const passwordHash = createHash(password);
   await usersModel.updateOne({ email }, { $set: { password: passwordHash } });
-  res.send({
-    status: 'success',
-    message: 'Contraseña actualizada correctamente'
-  });
+  response(res, 200, 'Contraseña actualizada correctamente');
 };
 
 export const current = (req, res) => {
   const user = new UserDTO(req.user);
-  res.send(user);
+  response(res, 200, user);
 };

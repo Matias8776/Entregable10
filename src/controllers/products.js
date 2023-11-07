@@ -1,6 +1,14 @@
 import { Products } from '../dao/factory.js';
 import __dirname, { passportCall, uploader } from '../utils.js';
 import path from 'path';
+import CustomError from '../services/errors/CustomError.js';
+import EErrors from '../services/errors/enums.js';
+import {
+  duplicateKeyError,
+  generateProductError,
+  notFoundProductError
+} from '../services/errors/info.js';
+import response from '../services/res/response.js';
 
 const productManager = new Products();
 
@@ -21,26 +29,27 @@ export const getProducts = async (req, res) => {
     disponibility,
     sort
   );
-
-  res.send({ status: 'success', payload: products });
+  response(res, 200, products);
 };
 
-export const getProductById = async (req, res) => {
+export const getProductById = async (req, res, next) => {
   const pid = req.params.pid;
   const product = await productManager.getProductById(pid);
 
   if (!product) {
-    res.status(404).send({
-      status: 'error',
-      message: `No existe el producto con el id ${pid}`
+    const error = new CustomError({
+      name: 'No existe el producto',
+      cause: notFoundProductError(pid),
+      message: `No existe el producto con el id: ${pid}`,
+      code: EErrors.NOT_FOUND
     });
-    return;
+    next(error);
+  } else {
+    response(res, 200, product);
   }
-
-  res.send(product);
 };
 
-export const addProduct = async (req, res) => {
+export const addProduct = async (req, res, next) => {
   let { title, description, price, thumbnails, code, stock, status, category } =
     req.body;
 
@@ -50,59 +59,118 @@ export const addProduct = async (req, res) => {
     });
   }
 
-  const validationResult = await productManager.addProduct({
-    title,
-    description,
-    price,
-    thumbnails,
-    code,
-    stock,
-    status,
-    category
-  });
-
-  if (!validationResult.success) {
-    res.status(409).send({
-      status: 'error',
-      message: `Error al crear el producto, ${validationResult.message}`
+  if (
+    typeof title === 'string' &&
+    typeof description === 'string' &&
+    typeof price === 'number' &&
+    price >= 0 &&
+    typeof code === 'string' &&
+    typeof stock === 'number' &&
+    stock >= 0 &&
+    typeof category === 'string'
+  ) {
+    const newProduct = await productManager.addProduct({
+      title,
+      description,
+      price,
+      thumbnails,
+      code,
+      stock,
+      status,
+      category
     });
+
+    if (!newProduct.success) {
+      const error = new CustomError({
+        name: 'Error al crear el producto',
+        cause: duplicateKeyError(code),
+        message: 'Código duplicado',
+        code: EErrors.DUPLICATE_KEY
+      });
+      next(error);
+    } else {
+      response(
+        res,
+        201,
+        `El producto se creo correctamente con el id: ${newProduct.id}`
+      );
+    }
   } else {
-    res.send({
-      status: 'success',
-      message: `Creado correctamente con el Id ${validationResult.id}`
+    const error = new CustomError({
+      name: 'Error al crear el producto',
+      cause: generateProductError({
+        title,
+        description,
+        price,
+        code,
+        stock,
+        category
+      }),
+      message: 'Faltan campos obligatorios o los datos no son validos',
+      code: EErrors.INVALID_TYPES
     });
+    next(error);
   }
 };
 
-export const updateProduct = async (req, res) => {
+export const updateProduct = async (req, res, next) => {
   const pid = req.params.pid;
   const product = await productManager.getProductById(pid);
 
   if (!product) {
-    res.status(404).send({
-      status: 'error',
-      message: `No existe el producto con el id ${pid}`
+    const error = new CustomError({
+      name: 'No existe el producto',
+      cause: notFoundProductError(pid),
+      message: `No existe el producto con el id: ${pid}`,
+      code: EErrors.NOT_FOUND
     });
-    return;
+    next(error);
+  } else {
+    if (
+      typeof req.body.title === 'string' ||
+      typeof req.body.code === 'string' ||
+      (typeof req.body.stock === 'number' && req.body.stock >= 0) ||
+      typeof req.body.category === 'string' ||
+      typeof req.body.description === 'string' ||
+      (typeof req.body.price === 'number' && req.body.price >= 0)
+    ) {
+      const updateProduct = req.body;
+      await productManager.updateProduct(product._id, updateProduct);
+      const updatedProduct = await productManager.getProductById(pid);
+      response(res, 200, updatedProduct);
+    } else {
+      const error = new CustomError({
+        name: 'Error al actualizar el producto',
+        cause: generateProductError({
+          title: req.body.title,
+          description: req.body.description,
+          price: req.body.price,
+          code: req.body.code,
+          stock: req.body.stock,
+          category: req.body.category
+        }),
+        message: 'Los datos no son validos',
+        code: EErrors.INVALID_TYPES
+      });
+      next(error);
+    }
   }
-  const updateProduct = req.body;
-  await productManager.updateProduct(product._id, updateProduct);
-  const updatedProduct = await productManager.getProductById(pid);
-  res.send(updatedProduct);
 };
 
-export const deleteProduct = async (req, res) => {
+export const deleteProduct = async (req, res, next) => {
   const pid = req.params.pid;
   const product = await productManager.getProductById(pid);
 
   if (!product) {
-    res.status(404).send({
-      status: 'error',
-      message: `No existe el producto con el id ${pid}`
+    const error = new CustomError({
+      name: 'No existe el producto',
+      cause: notFoundProductError(pid),
+      message: `No existe el producto con el id: ${pid}`,
+      code: EErrors.NOT_FOUND
     });
-    return;
+    next(error);
+  } else {
+    await productManager.deleteProduct(product._id);
+    response(res, 200, `Se elimino el producto con el id ${pid}`);
   }
-
-  await productManager.deleteProduct(product._id);
-  res.send({ status: 'success' });
 };

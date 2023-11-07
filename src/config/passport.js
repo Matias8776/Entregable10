@@ -21,19 +21,8 @@ const initializePassport = () => {
         try {
           const { first_name, last_name, email, age } = req.body;
           if (!first_name || !last_name || !email || !age || !password) {
-            CustomError.createError({
-              name: 'Error al crear el usuario',
-              cause: generateUserErrorInfo({
-                first_name,
-                last_name,
-                email,
-                age
-              }),
-              message: 'Error al intentar crear el usuario',
-              code: EErrors.INVALID_TYPES_ERROR
-            });
             return done(null, false, {
-              message: 'Faltan Datos'
+              message: 'Faltan datos'
             });
           }
           const user = await usersModel.findOne({ email: username });

@@ -1,4 +1,4 @@
-# Pre Entrega 3
+# Entregable 10
 
 &nbsp;
 
@@ -6,10 +6,17 @@
 
 ###
 
-- git clone https://github.com/Matias8776/PreEntrega3-Backend-Carballo.git
-- cd PreEntrega3-Backend-Carballo
+- git clone https://github.com/Matias8776/Entregable10.git
+- cd Entregable10
 - npm i
 - npm start
+
+## Mocking Products:
+
+###
+
+- http://localhost:8080/mockingproducts
+
 
 ## Vista de productos:
 
@@ -114,7 +121,7 @@
 
 - GET localhost:8080/api/carts/:cid
 
-## Actualizar carrito entero:
+## Actualizar carrito:
 
 ###
 
@@ -123,14 +130,14 @@
 ```javascript
 [
   {
-    _id: { _id: '64fca344bc7da40deee9e304' },
-    quantity: 1
+    _id: '64fca344bc7da40deee9e304',
+    quantity: 2
   },
   {
-    _id: { _id: '64fca344bc7da40deee9e305' },
-    quantity: 14
+    _id: '64fca344bc7da40deee9e305',
+    quantity: 4
   }
-];
+]
 ```
 
 ## Actualizar cantidad de un producto en carrito:

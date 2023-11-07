@@ -31,20 +31,19 @@ export default class ProductManager {
 
       const paginate = await productsModel.paginate(filter, options);
       return paginate;
-    } catch (err) {
-      return err;
+    } catch (error) {
+      return { error: error.message };
     }
   };
 
   getProductById = async (id) => {
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      return;
+    }
     try {
-      if (!mongoose.Types.ObjectId.isValid(id)) {
-        return { error: 'Id no válido' };
-      }
-
       return await productsModel.findById(id).lean();
-    } catch (err) {
-      return { error: err.message };
+    } catch (error) {
+      return { error: error.message };
     }
   };
 
@@ -58,30 +57,29 @@ export default class ProductManager {
       result.id = productAdded.id;
       result.success = true;
       return result;
-    } catch (err) {
-      return err;
+    } catch (error) {
+      return { error: error.message };
     }
   };
 
   updateProduct = async (id, product) => {
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      return;
+    }
     try {
-      if (!mongoose.Types.ObjectId.isValid(id)) {
-        return { error: 'Id no válido' };
-      } else {
-        return await productsModel.findByIdAndUpdate(id, {
-          $set: product
-        });
-      }
-    } catch (err) {
-      return { error: err.message };
+      return await productsModel.findByIdAndUpdate(id, {
+        $set: product
+      });
+    } catch (error) {
+      return { error: error.message };
     }
   };
 
   deleteProduct = async (id) => {
     try {
       return await productsModel.findByIdAndDelete(id);
-    } catch (err) {
-      return err;
+    } catch (error) {
+      return { error: error.message };
     }
   };
 }
